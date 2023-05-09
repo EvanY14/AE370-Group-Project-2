@@ -10,11 +10,12 @@ sys.path.insert(0, os.path.abspath(
 from trap import Simulator
 
 # Dummy wave function
-input_wave = np.cos(np.linspace(0, 10*np.pi, 10000))
+input_wave = np.cos(np.linspace(0, 10*np.pi, 10000))*10
+print(input_wave[7500])
 sampling_rate = 88.2e3 # Hz
 
 # Simulation parameters
-c = 343 # Speed of sound in air m/s
+c = 3.43 # Speed of sound in air m/s
 a = 0 # Position of speaker (origin)
 b = 0.025 # Distance from speaker to ear in m
 
@@ -28,8 +29,9 @@ initial_condition[0] = input_wave[0]
 initial_condition[-1] = 0
 
 u_dot = -np.sin(np.linspace(0, 10*np.pi, 10000))[:n] # Derivative of wave function
-
-u = np.append(initial_condition, u_dot).flatten() # Initial condition for simulation
+u_dot_initial = np.zeros(n) # Initial condition for derivative of wave function
+u_dot_initial[0] = u_dot[0]
+u = np.append(initial_condition, u_dot_initial).flatten() # Initial condition for simulation
 print(np.shape(u))
 u_store = np.zeros((len(input_wave), n)) # Store data points for plotting (times in rows, positions in columns)
 sim = Simulator(c, 1/sampling_rate, initial_condition, 0, len(input_wave), n, (b-a)/n)

@@ -18,20 +18,24 @@ class Simulator:
         self.tf = tf
         self.n = n
         self._B(n, c, dx)
+        # print(np.shape(self.B))
         self.I = np.eye(self.B.shape[0])
+        self.F = np.linalg.inv(self.I - self.dt/2*self.B)
+        # print(np.shape(self.F))
 
     def _A(self, n, c, dx):
-        A = np.diag(np.ones(n-1), -1) + np.diag(np.ones(n-1), 1) + np.diag(-2 * np.ones(n))
+        A = np.diag(np.ones(n-2), -1) + np.diag(np.ones(n-2), 1) + np.diag(-2 * np.ones(n-1))
         self.A = c**2/(dx**2)*A
     
     def _B(self, n, c, dx):
         self._A(n, c, dx)
-        self.B = np.block([[np.zeros_like(self.A), np.eye(n)], [self.A, np.zeros((n, n))]])     
+        self.B = np.block([[np.zeros_like(self.A), np.eye(n-1)], [self.A, np.zeros((n-1, n-1))]])     
         
     def trap_forward_prop(self, u, t, u_a):
-        u[0] = u_a[t]
-        u[-1] = 0
-        u_i_plus_1 = np.linalg.inv(self.I - self.dt/2*self.B)@(u + self.dt/2*(self.B@u + u_a[t] + u_a[t+1]))
+        u_i_plus_1 = np.copy(u)
+        u_i_plus_1[0] = u_a[t]
+        u_i_plus_1[-1] = 0
+        u_i_plus_1[1:-1] = self.F@(u[1:-1] + self.dt/2*(self.B@u[1:-1] + u_a[t] + u_a[t+1]))
         return u_i_plus_1
 
 if __name__ == '__main__':
