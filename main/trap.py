@@ -31,11 +31,13 @@ class Simulator:
         self._A(n, c, dx)
         self.B = np.block([[np.zeros_like(self.A), np.eye(n-1)], [self.A, np.zeros((n-1, n-1))]])     
         
-    def trap_forward_prop(self, u, t, u_a):
+    def trap_forward_prop(self, u, t, u_a, u_dot):
         u_i_plus_1 = np.copy(u)
         u_i_plus_1[0] = u_a[t]
+        u_i_plus_1[int(len(u)/2)-1] = 0
+        u_i_plus_1[int(len(u)/2)] = u_dot[t]
         u_i_plus_1[-1] = 0
-        u_i_plus_1[1:-1] = self.F@(u[1:-1] + self.dt/2*(self.B@u[1:-1] + u_a[t] + u_a[t+1]))
+        u_i_plus_1[1:-1] = self.F@(u[1:-1] + self.dt/2*(self.B@u[1:-1]))
         return u_i_plus_1
 
 if __name__ == '__main__':

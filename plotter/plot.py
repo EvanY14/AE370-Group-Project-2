@@ -10,7 +10,7 @@ data = load_data('output')
 def plot_bla():
     fig = plt.figure(figsize=(8,8), tight_layout=True)
     ax = fig.add_subplot(111)
-    ax.plot(data[5000, :])
+    ax.plot(data[2000, :])
     fig.savefig('bla.pdf', facecolor='white', transparent=False)
     
 plot_bla()
